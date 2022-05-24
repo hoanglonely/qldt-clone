@@ -1,0 +1,139 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title th:text="#{app.name}"></title>
+    
+	<link rel="apple-touch-icon" sizes="57x57" th:attr="href=@{/assets/favicon/apple-icon-57x57.png}">
+	<link rel="apple-touch-icon" sizes="60x60" th:attr="href=@{/assets/favicon/apple-icon-60x60.png}">
+	<link rel="apple-touch-icon" sizes="72x72" th:attr="href=@{/assets/favicon/apple-icon-72x72.png}">
+	<link rel="apple-touch-icon" sizes="76x76" th:attr="href=@{/assets/favicon/apple-icon-76x76.png}">
+	<link rel="apple-touch-icon" sizes="114x114" th:attr="href=@{/assets/favicon/apple-icon-114x114.png}">
+	<link rel="apple-touch-icon" sizes="120x120" th:attr="href=@{/assets/favicon/apple-icon-120x120.png}">
+	<link rel="apple-touch-icon" sizes="144x144" th:attr="href=@{/assets/favicon/apple-icon-144x144.png}">
+	<link rel="apple-touch-icon" sizes="152x152" th:attr="href=@{/assets/favicon/apple-icon-152x152.png}">
+	<link rel="apple-touch-icon" sizes="180x180" th:attr="href=@{/assets/favicon/apple-icon-180x180.png}">
+	<link rel="icon" type="image/png" sizes="192x192"  th:attr="href=@{/assets/favicon/android-icon-192x192.png}">
+	<link rel="icon" type="image/png" sizes="32x32" th:attr="href=@{/assets/favicon/favicon-32x32.png}">
+	<link rel="icon" type="image/png" sizes="96x96" th:attr="href=@{/assets/favicon/favicon-96x96.png}">
+	<link rel="icon" type="image/png" sizes="16x16" th:attr="href=@{/assets/favicon/favicon-16x16.png}">
+	<link rel="manifest" th:attr="href=@{/assets/favicon/manifest.json}">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" th:attr="content=@{/assets/favicon/ms-icon-144x144.png}">
+	<meta name="theme-color" content="#ffffff">
+	<link rel="stylesheet" th:attr="href=@{/webjars/bootstrap/4.4.1-1/css/bootstrap.min.css}"></head>
+	<link rel="stylesheet" th:attr="href=@{/webjars/font-awesome/5.12.0/css/all.min.css}"></head>
+	<link rel="stylesheet" th:attr="href=@{/styles/styles.css}"></head>
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+</head>
+
+<body>
+
+	<div class="login-container">
+		<div class="login-block">
+			<div class="logo-container">
+				<img th:src="@{/assets/images/login-logo.svg}" id="logo">
+			</div>
+			<form class="login-box-container" th:action="@{/login}" method="post">
+
+				<div th:if="${param.authentication_error != null}" class="error-block">
+					<p th:text="#{login.message.not.success}"></p>
+				</div>
+
+				<div th:if="${param.authorization_error != null}" class="error-block">
+					<p th:text="#{login.message.not.permitted}"></p>
+				</div>
+
+				<div class="form-group">
+					<label th:text="#{login.hint.account}"></label>
+					<div class="input-icon">
+						<input type="text" id="username" name="j_username" class="form-control">
+						<i class="fas fa-user icon"></i>
+					</div>
+				</div>
+				<div class="form-group">
+					<label th:text="#{login.hint.password}"></label>
+					<div class="input-icon">
+						<input type="password" id="password" name="j_password" class="form-control" autocomplete="off">
+						<i class="fas fa-lock icon"></i>
+					</div>
+				</div>
+				<div th:if="${isRecaptchaRequired == true || param.recaptchaError != null || param.showRecaptcha != null}" class="form-group">
+					<label th:text="#{login.hint.captcha}"></label>
+					<div class="input-icon input-captcha">
+						<input type="text" id="captcha" name="captcha" class="form-control" autocomplete="off">
+						<div class="img-captcha">
+							<img id="captchaImage" th:src="@{/captcha}" alt="CAPTCHA">
+							<a id="reloadCaptchaBtn" href="javascript:void(0);">
+								<i class="fas fa-sync"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+				<input type="submit" class="submit" th:value="#{login.button}">
+				<div class="language-container">
+					<div class="row small-gutters">
+						<div class="col"></div>
+						<div class="col-auto">
+							<img id="viLanguageBtn" th:src="@{/assets/images/languages/vi.svg}" alt="vi" th:classappend="${language} != 'en' ? 'active' : ''">
+						</div>
+						<div class="col-auto">
+							<img id="enLanguageBtn" th:src="@{/assets/images/languages/en.svg}" alt="en" th:classappend="${language} == 'en' ? 'active' : ''">
+						</div>
+						<div class="col"></div>
+					</div>
+				</div>
+			</form>
+			<div class="login-footer">© 2020 Viettel. All rights reserved.</div>
+		</div>
+	</div>
+	
+	<script>
+		$(document).ready(function() {
+			var captchaImg = $('#captchaImage');
+			var reloadCaptchaBtn = $('#reloadCaptchaBtn');
+			var viLanguageBtn = $('#viLanguageBtn');
+			var enLanguageBtn = $('#enLanguageBtn');
+			
+			var replaceUrlParam = function(url, paramName, paramValue) {
+			    if (paramValue == null) {
+			        paramValue = '';
+			    }
+
+			    var pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+			    if (url.search(pattern) >= 0) {
+			        return url.replace(pattern, '$1' + paramValue + '$2');
+			    }
+
+			    url = url.replace(/[?#]$/, '');
+			    return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+			};
+			
+			var refreshCaptcha = function() {
+				var currentSrc = captchaImg.attr('src');
+				if (currentSrc == null) {
+					return;
+				}
+				var timestamp = new Date().getTime();
+				var newSrc = replaceUrlParam(currentSrc, 'time', timestamp);
+				captchaImg.attr('src', newSrc);
+			};
+			
+			var changeLanguage = function(language) {
+				var url = window.location.href;
+				var newUrl = replaceUrlParam(url, 'hl', language);
+				window.location.href = newUrl;
+			}
+			
+			reloadCaptchaBtn.on('click', refreshCaptcha);
+			viLanguageBtn.on('click', function() { changeLanguage('vi') });
+			enLanguageBtn.on('click', function() { changeLanguage('en') });
+		});
+	</script>
+
+</body>
+
+</html>

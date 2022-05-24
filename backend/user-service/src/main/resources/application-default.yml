@@ -1,0 +1,91 @@
+server:
+  port: 8801
+  
+eureka:
+  instance:
+    prefer-ip-address: true
+    #ip-address: 
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetchRegistry: true
+
+storage:
+  s3:
+    credentials:
+      accessKey: 4MGD1WNHHJFQPQE8K5ST
+      secretKey: ENC(kaWeZC+bSvSa9ECQMUhvv0w3E12x3AM+jjVg22JWN7epaKHWRJaN4clBHKE3oNl0Y0n27WJcGk4=)
+    endpoint:
+      custom-endpoint: http://192.168.100.200:9000
+    bucket: vietpost
+    url-type: cname
+    cname: static-test.faskera.com/vietpost
+    use-https: true
+    grant-public-permission: false
+    pre-signed-output-url: false
+
+api:
+  viettel-id:
+    username: viettelid_mediaone
+    password: ENC(tA+TqQTMjgQH6H2Wcih4ILOL2G2T7/7I)
+    connect-timeout: 10000
+    read-timeout: 10000
+    reward-service:
+      base-url: http://192.168.100.233:8300/loyaltyRewardService
+      retry-failed-sms: true
+
+password:
+  weak-password:
+    - 123456
+    - 123456a@
+    - 123456aA@
+    - 1234567
+    - 12345678
+    - 123456789
+    - password
+    - qwerty
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDB103Dialect
+  
+  datasource:
+    url: jdbc:mariadb://192.168.100.236:3306/qldt_myviettel?useUnicode=true&character_set_server=utf8mb4
+    username: admin
+    password: ENC(x6tRqN1y2fNy2AfOkNk91FtiljJDFjYE)
+    driver-class-name: org.mariadb.jdbc.Driver
+  
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 192.168.100.203:9092
+  
+  mail:
+    host: smtp.gmail.com
+    username: nhunghm14@gmail.com
+    password: Y2JhZjNhNDAtMz
+    properties:
+      mail:
+        smtp:
+          from: nhunghm14@gmail.com
+          auth: true
+          socketFactory:
+            port: 465
+            class: "javax.net.ssl.SSLSocketFactory"
+            fallback: false
+          ssl:
+            enable: true
+  
+  redis:
+    database: 0
+    host: 192.168.100.203
+    password: ENC(5ngERB+kN2dxsHDBauA5anrzhGGg81sT1aVxbNy2zeFtql1f6EJia8X4vHarGX+ZJU+XC+87GJQ=)
+  
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: ENC(S1OY8tEwytr7QVrHcymlcA==)

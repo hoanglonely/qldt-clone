@@ -1,23 +1,63 @@
-# Compiled class file
-*.class
+# Eclipse
+**/.settings/
+**/.project
+**/.classpath
+**/.springBeans
 
-# Log file
-*.log
+# Intellij
+**/.idea/
+**/*.iml
+**/*.iws
 
-# BlueJ files
-*.ctxt
+# IDE - VSCode
+**/.vscode/*
+!**/.vscode/settings.json
+!**/.vscode/tasks.json
+!**/.vscode/launch.json
+!**/.vscode/extensions.json
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# OTHER IDE
+**/.c9/
+**/.launch
+**/.sublime-workspace
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# Mac
+.DS_Store
+Thumbs.db
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# Maven
+**/target/
+!**/src/**/target/
+!**/client/**/target/
+**/bin/
+!**/src/**/bin/
+!**/client/**/bin/
+**/log/
+!**/src/**/log/
+!**/client/**/log/
+**/dist/
+!**/src/**/dist/
+!**/client/**/dist/
+
+# JREBEL
+**/rebel.xml
+
+*.factorypath
+application.pid
+.recommenders/
+.metadata/
+
+# WEBVIEW
+# compiled output
+**/dist
+**/tmp
+**/out-tsc
+**/node_modules
+**/.sass-cache
+**/connect.lock
+**/coverage
+**/libpeerconnection.log
+**/npm-debug.log
+**/yarn-error.log
+**/testem.log
+**/typings

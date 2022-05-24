@@ -1,0 +1,96 @@
+server:
+  port: 8801
+  
+storage:
+  type: s3
+  s3:
+    endpoint:
+      region: ap-southeast-1
+      use-custom-endpoint: true
+      use-path-style-access: true
+    
+password:
+  weak-password:
+    - 123456
+    - 123456a@
+    - 123456aA@
+    - 1234567
+    - 12345678
+    - 123456789
+    - password
+    - qwerty
+
+spring:
+  application:
+    name: user-service
+  
+  main:
+    web-application-type: servlet
+    
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        jdbc:
+          batch_size:  50
+  
+  cloud:
+    stream:
+      default:
+        contentType: application/json
+        group: ${spring.application.name}
+        consumer:
+          headerMode: none
+        producer:
+          headerMode: none
+          partitionCount: 6
+      kafka:
+        binder:
+          autoAddPartitions: true
+      bindings:
+        action-log-out:
+          destination: action-log
+        business-log-out:
+          destination: business-log
+        error-log-out:
+          destination: error-log
+        user-deactivation-out:
+          destination: user-deactivation
+        user-password-changed-out:
+          destination: user-password-changed
+        send-email-in:
+          destination: send-email
+        send-email-out:
+          destination: send-email
+        send-sms-in:
+          destination: send-sms
+        send-sms-out:
+          destination: send-sms
+        ecom-action-log-out:
+          destination: ecom-action-log
+
+  redis:
+    redisson:
+      config: classpath:/redisson.yml
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+hystrix:
+  # ribbon.ConnectTimeout + ribbon.ReadTimeout
+  command.default.execution.isolation.thread.timeoutInMilliseconds: 13000
+
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 10000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+
+jasypt:
+  encryptor:
+    password: ${CONFIG_ENCRYPTOR_SECRET:n4vekQdqiGeuk_VTT_QLDT_2020}

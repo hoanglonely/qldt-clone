@@ -1,0 +1,236 @@
+package com.mb.lab.banks.user.persistence.domain.entity;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+public enum Feature {
+
+    // @formatter:off
+
+    DASHBOARD,
+    SMS_CONTENT_MANAGEMENT,
+    EMAIL_RECEIVER_MANAGEMENT,
+    SMS_RECEIVER_MANAGEMENT,
+    SUB_ADMIN_MANAGEMENT,
+    STORE_MANAGEMENT,
+    STORE_REVIEW,
+    STORE_ADMIN_MANAGEMENT,
+    LOG_MANAGEMENT,
+    PRODUCT_MANAGEMENT,
+    PRODUCT_REVIEW,
+    CUSTOMER_MANAGEMENT,
+    PARTNER_MANAGEMENT,
+    FIELD_MANAGEMENT,
+    CAMPAIGN_MANAGEMENT,
+    CAMPAIGN_REVIEW,
+    GIFT_MANAGEMENT,
+	VOUCHER_MANAGEMENT,
+	VOUCHER_REVIEW,
+	VOUCHER_IMPORTANT,
+	VOUCHER_LOOKUP,
+	CAMPAIGN_LOOKUP,
+	PRODUCT_LOOKUP,
+	VOUCHER_SETTLEMENT,
+	PARTNER_REVIEW,
+	PROVINCE_MANAGEMENT,
+	CUSTOMER_SEGMENT,
+	VOUCHER_CODE_SET_MANAGEMENT,
+	PARTNER_ADMIN_MANAGEMENT,
+	SYSTEM_CONFIG_MANAGEMENT,
+	CODE_RETRIEVE,
+	CODE_RETRIEVE_FROM_FILE,
+	PROACTIVE_SMS,
+	CUSTOMER_SUPPORTED_BY_ADMIN,
+	ERROR_CONTENT_MANAGEMENT,
+	DISTRICT_MANAGEMENT,
+	WARD_MANAGEMENT,
+	GET_CODE_HISTORY,
+	LIMITER_MANAGEMENT,
+	PROVIDER_MANAGEMENT,
+	GET_BLACKLIST_MANAGEMENT,
+	BLACKLIST_MANAGEMENT,
+	GET_CODE_INFOMATION,
+	BANNER_WEB,
+	CODE_EXPIRE_WARNING_CONFIG,
+	ECOM_PRODUCT_CATEGORY,
+	ECOM_PROVIDER,
+	ECOM_PRODUCT,
+	ECOM_SUB_ADMIN_MANAGEMENT,
+    ECOM_ACTION_LOG_MANAGEMENT,
+	BOOKING,
+	BOOKING_REVIEW,
+    REPORT_VOUCHER_CODE_RETRIEVE,
+    REPORT_VOUCHER_MANAGEMENT,
+    REPORT_PARTNER_MANAGEMENT,
+    SYNTHESIS_MANAGEMENT,
+    CACHE_MANAGEMENT,
+    VTPAY_TRANSACTION,
+    GIVE_CODE_HISTORY,
+    CANCEL_CODE,
+    OTP_MANAGEMENT,
+    UP_FILE_USED_CODE,
+    GET_CODE_MANWA_HISTORY,
+    VOUCHER_TRANSACTION,
+    MERCHANT_MANAGEMENT,
+    MEMBERSHIP_INFO_MANAGEMENT,
+    REPORT_MEMBERSHIP_INFO,
+    APP_MANAGEMENT,
+    CHECK_CUSTOMER_ACCESSIBILITY,
+    COOPERATION_PARTNER_MANAGEMENT,
+    REPORT_COOPERATION_PARTNER,
+    CAREER_MANAGEMENT,
+    TELEPHONIST_GET_CODE,
+    CDR_HISTORY_MANAGEMENT,
+    PARTNER_PROVIDER_MAPPING,
+    ACCUMULATE_POINT_HISTORY,
+    MEMBER_CARD_MANAGEMENT,
+    VOUCHER_MERCHANT_REVIEW,
+    PROVIDER_FIELD_CROSS_CHECK,
+    ACCUMULATE_POINT_TRANSACTION;
+
+    public static final FeatureSet SUB_ADMIN_FEATURE_SET = createSet(
+            DASHBOARD,
+            LOG_MANAGEMENT,
+            PARTNER_ADMIN_MANAGEMENT,
+            STORE_ADMIN_MANAGEMENT,
+            BANNER_WEB,
+            BLACKLIST_MANAGEMENT,
+            BOOKING,
+            BOOKING_REVIEW,
+            CAMPAIGN_LOOKUP,
+            CAMPAIGN_MANAGEMENT,
+            CAMPAIGN_REVIEW,
+            CODE_EXPIRE_WARNING_CONFIG,
+            REPORT_VOUCHER_CODE_RETRIEVE,
+            REPORT_PARTNER_MANAGEMENT,
+            REPORT_VOUCHER_MANAGEMENT,
+            CUSTOMER_MANAGEMENT,
+            CUSTOMER_SEGMENT,
+            CUSTOMER_SUPPORTED_BY_ADMIN,
+            DISTRICT_MANAGEMENT,
+            EMAIL_RECEIVER_MANAGEMENT,
+            ERROR_CONTENT_MANAGEMENT,
+            FIELD_MANAGEMENT,
+            GET_BLACKLIST_MANAGEMENT,
+            GIFT_MANAGEMENT,
+            LIMITER_MANAGEMENT,
+            PARTNER_MANAGEMENT,
+            PARTNER_REVIEW,
+            PRODUCT_MANAGEMENT,
+            PRODUCT_LOOKUP,
+            PRODUCT_REVIEW,
+            PROVIDER_MANAGEMENT,
+            PROVINCE_MANAGEMENT,
+            SMS_CONTENT_MANAGEMENT,
+            PROACTIVE_SMS,
+            SMS_RECEIVER_MANAGEMENT,
+            STORE_MANAGEMENT,
+            STORE_REVIEW,
+            SYSTEM_CONFIG_MANAGEMENT,
+            GET_CODE_HISTORY,
+            GET_CODE_INFOMATION,
+            VOUCHER_SETTLEMENT,
+            VOUCHER_CODE_SET_MANAGEMENT,
+            VOUCHER_IMPORTANT,
+            VOUCHER_LOOKUP,
+            VOUCHER_MANAGEMENT,
+            VOUCHER_REVIEW,
+            WARD_MANAGEMENT,
+            CODE_RETRIEVE,
+            VTPAY_TRANSACTION,
+            GIVE_CODE_HISTORY,
+            CANCEL_CODE,
+            OTP_MANAGEMENT,
+            UP_FILE_USED_CODE,
+            GET_CODE_MANWA_HISTORY,
+            VOUCHER_TRANSACTION,
+            MERCHANT_MANAGEMENT,
+            MEMBERSHIP_INFO_MANAGEMENT,
+            REPORT_MEMBERSHIP_INFO,
+            APP_MANAGEMENT,
+            CHECK_CUSTOMER_ACCESSIBILITY,
+            COOPERATION_PARTNER_MANAGEMENT,
+            REPORT_COOPERATION_PARTNER,
+            CAREER_MANAGEMENT,
+            TELEPHONIST_GET_CODE,
+            CDR_HISTORY_MANAGEMENT,
+            PARTNER_PROVIDER_MAPPING,
+            ACCUMULATE_POINT_HISTORY,
+            MEMBER_CARD_MANAGEMENT,
+            VOUCHER_MERCHANT_REVIEW,
+            PROVIDER_FIELD_CROSS_CHECK,
+            ACCUMULATE_POINT_TRANSACTION);
+
+    public static final FeatureSet PARTNER_ADMIN_FEATURE_SET = createSet(
+            DASHBOARD,
+            STORE_ADMIN_MANAGEMENT,
+            CAMPAIGN_LOOKUP,
+            DISTRICT_MANAGEMENT,
+            PRODUCT_MANAGEMENT,
+            PRODUCT_LOOKUP,
+            PRODUCT_REVIEW,
+            PROVINCE_MANAGEMENT,
+            STORE_MANAGEMENT,
+            STORE_REVIEW,
+            GET_CODE_HISTORY,
+            GET_CODE_INFOMATION,
+            VOUCHER_SETTLEMENT,
+            VOUCHER_LOOKUP,
+            VOUCHER_MANAGEMENT,
+            VOUCHER_REVIEW,
+            WARD_MANAGEMENT,
+            GET_CODE_MANWA_HISTORY,
+            VOUCHER_MERCHANT_REVIEW
+            );
+
+    public static final FeatureSet STORE_ADMIN_FEATURE_SET = createSet(
+            DASHBOARD,
+            CAMPAIGN_LOOKUP,
+            DISTRICT_MANAGEMENT,
+            PRODUCT_LOOKUP,
+            PROVINCE_MANAGEMENT,
+            GET_CODE_HISTORY,
+            GET_CODE_INFOMATION,
+            VOUCHER_SETTLEMENT,
+            VOUCHER_LOOKUP,
+            WARD_MANAGEMENT,
+            GET_CODE_MANWA_HISTORY
+            );
+
+    public static final FeatureSet ECOM_SUB_ADMIN_FEATURE_SET = createSet(
+            ECOM_ACTION_LOG_MANAGEMENT,
+            ECOM_PRODUCT_CATEGORY,
+            ECOM_PRODUCT,
+            ECOM_PROVIDER
+            );
+
+    // @formatter:on
+
+    public static FeatureSet createSet(Feature... features) {
+        return createSet(false, features);
+    }
+
+    public static FeatureSet createSet(boolean fetchNullValue, Feature... features) {
+        return new FeatureSet(fetchNullValue, features);
+    }
+
+    public static class FeatureSet {
+
+        private boolean fetchNullValue;
+        private Collection<Feature> features;
+
+        private FeatureSet(boolean fetchNullValue, Feature... features) {
+            this.fetchNullValue = fetchNullValue;
+            this.features = Arrays.asList(features);
+        }
+
+        public Collection<Feature> getFeatures() {
+            return features;
+        }
+
+        public boolean isFetchNullValue() {
+            return fetchNullValue;
+        }
+    }
+
+}

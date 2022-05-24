@@ -1,0 +1,137 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.mb.lab.banks</groupId>
+		<artifactId>backend</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>discovery-service</artifactId>
+	<packaging>jar</packaging>
+	
+	<properties>
+		<finalBuildName>${project.artifactId}-${project.parent.version}</finalBuildName>
+
+		<!-- Distribution properties -->
+		<dist.dir>${project.parent.basedir}/dist</dist.dir>
+		<dist.temp.dir>${project.build.directory}/distribution</dist.temp.dir>
+		<dist.service.id>discovery-service</dist.service.id>
+		<dist.service.name>discovery-service</dist.service.name>
+		<dist.service.description>This service runs discovery-service.</dist.service.description>
+		<dist.start.class>com.mb.lab.banks.discovery.DiscoveryApplication</dist.start.class>
+		<dist.linux.user>root</dist.linux.user>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.mb.lab.banks</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<finalName>${finalBuildName}</finalName>
+					<excludes>
+						<exclude>application-default.yml</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${dist.temp.dir}</outputDirectory>
+							<delimiters>
+								<delimiter>${*}</delimiter>
+								<delimiter>@</delimiter>
+							</delimiters>
+							<resources>
+								<resource>
+									<directory>src/main/distribution</directory>
+									<filtering>true</filtering>
+									<excludes>
+										<exclude>**/*.jar</exclude>
+									</excludes>
+								</resource>
+								<resource>
+									<directory>src/main/distribution</directory>
+									<filtering>false</filtering>
+									<includes>
+										<include>**/*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/bundle.xml</descriptor>
+					</descriptors>
+					<appendAssemblyId>false</appendAssemblyId>
+					<outputDirectory>${dist.dir}</outputDirectory>
+					<finalName>${finalBuildName}</finalName>
+				</configuration>
+				<executions>
+					<execution>
+						<id>assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${dist.dir}</directory>
+							<followSymlinks>false</followSymlinks>
+							<includes>
+								<include>${finalBuildName}.jar</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

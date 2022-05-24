@@ -1,0 +1,55 @@
+server:
+  port: 8081
+  #undertow:
+    #worker-threads: 1000
+
+local-rate-limit:
+  enabled: false
+  request-per-second: 10000
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    #ip-address: 
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetchRegistry: true
+
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 192.168.100.203:9092
+
+  redis:
+    database: 0
+    host: 192.168.100.203
+    password: ENC(5ngERB+kN2dxsHDBauA5anrzhGGg81sT1aVxbNy2zeFtql1f6EJia8X4vHarGX+ZJU+XC+87GJQ=)
+
+hystrix:
+  # ribbon.ConnectTimeout + ribbon.ReadTimeout
+  command.default.execution.isolation.thread.timeoutInMilliseconds: 43000
+  command.storage-service.execution.isolation.thread.timeoutInMilliseconds: 20000
+
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 40000
+
+storage:
+  listOfServers: http://192.168.100.26:9000
+  listOfBuckets: vietpost
+
+zuul:
+  semaphore:
+    maxSemaphores: 30000
+  host:
+    connect-timeout-millis: 3000
+    connection-request-timeout-millis: 60000
+
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: ENC(S1OY8tEwytr7QVrHcymlcA==)

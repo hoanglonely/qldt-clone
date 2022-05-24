@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "api",
+    "type": "com.mb.lab.banks.user.config.ApiUrlProperties",
+    "description": "A description for 'api'"
+  },
+  {
+    "name": "password",
+    "type": "com.mb.lab.banks.user.config.PasswordStrenghtProperties",
+    "description": "A description for 'password'"
+  }
+]}

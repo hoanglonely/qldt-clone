@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- configuration file for LogBack (slf4J implementation) See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-through-the-java-loggers/ -->
+<configuration scan="true" scanPeriod="30 seconds">
+
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<!-- To enable JMX Management -->
+	<jmxConfigurator />
+	
+	<conversionRule conversionWord="pLowercase" converterClass="com.mb.lab.banks.utils.logging.LowercaseLevelConverter" />
+
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<property name="LOG_FILE" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}auth-server.log" />
+	<property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+	
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<encoder class="com.mb.lab.banks.utils.logging.CustomPatternLayoutEncoder" />
+		<file>${LOG_FILE}</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<cleanHistoryOnStart>${LOG_FILE_CLEAN_HISTORY_ON_START:-false}</cleanHistoryOnStart>
+			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}%d{yyyyMMdd}_%i{}_auth-server.zip}</fileNamePattern>
+			<maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
+			<maxHistory>${LOG_FILE_MAX_HISTORY:-30}</maxHistory>
+			<totalSizeCap>${LOG_FILE_TOTAL_SIZE_CAP:-0}</totalSizeCap>
+		</rollingPolicy>
+	</appender>
+
+	<logger name="org.springframework.aop.framework.CglibAopProxy" level="INFO" />
+	<logger name="org.glassfish.jersey.filter.LoggingFilter" level="ERROR" />
+	
+	<logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="INFO"/>
+	
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

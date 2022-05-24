@@ -1,0 +1,436 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: api-gateway
+
+  main:
+    web-application-type: servlet
+  
+  servlet:  
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  cloud:
+    stream:
+      default:
+        contentType: application/json
+        group: ${spring.application.name}
+        consumer:
+          headerMode: none
+        producer:
+          headerMode: none
+          partitionCount: 6
+      kafka:
+        binder:
+          autoAddPartitions: true
+      bindings:
+        open-api-request-log-out:
+          destination: open-api-request-log
+
+  redis:
+    redisson:
+      config: classpath:/redisson.yml
+  
+hystrix:
+  # ribbon.ConnectTimeout + ribbon.ReadTimeout
+  command.default.execution.isolation.thread.timeoutInMilliseconds: 43000
+  command.storage-service.execution.isolation.thread.timeoutInMilliseconds: 20000
+
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 40000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+
+storage-service.ribbon.NIWSServerListClassName: com.netflix.loadbalancer.ConfigurationBasedServerList
+storage-service.ribbon.NFLoadBalancerPingClassName: com.mb.lab.banks.apigateway.utils.MinIOPingUrl
+storage-service.ribbon.listOfServers: ${storage.listOfServers}
+storage-service.ribbon.ConnectTimeout: 5000
+storage-service.ribbon.ReadTimeout: 5000
+
+zuul:
+  add-proxy-headers: true
+  add-host-header: true
+  host:
+    max-total-connections: 1000
+    max-per-route-connections: 100
+    socket-timeout-millis: 40000
+    connect-timeout-millis: 3000
+    connection-request-timeout-millis: 40000
+  sensitiveHeaders: 
+  routes:
+    auth:
+      path: /auth/**
+      service-id: auth-server
+      strip-prefix: false
+    open-api:
+      path: /open-api/**
+      service-id: promotion-service
+      strip-prefix: false
+    files:
+      path: /files/**
+      service-id: storage-service
+      strip-prefix: true
+    payment:
+      path: /payment/**
+      service-id: promotion-service
+      strip-prefix: false
+    mobile-api-voucher:
+      path: /mobile-api/voucher/**
+      service-id: promotion-service
+      strip-prefix: false
+    mobile-api-auth:
+      path: /mobile-api/auth/**
+      service-id: auth-server
+      strip-prefix: false
+    sub-admin:
+      path: /api/admin/sub-admin/**
+      service-id: user-service
+      strip-prefix: false
+    partner-admin:
+      path: /api/admin/partner-admin/**
+      service-id: user-service
+      strip-prefix: false
+    store-admin:
+      path: /api/admin/store-admin/**
+      service-id: user-service
+      strip-prefix: false
+    partner:
+      path: /api/admin/partner/**
+      service-id: promotion-service
+      strip-prefix: false
+    partner-review:
+      path: /api/admin/partner-review/**
+      service-id: promotion-service
+      strip-prefix: false
+    field:
+      path: /api/admin/field/**
+      service-id: promotion-service
+      strip-prefix: false
+    province:
+      path: /api/admin/province/**
+      service-id: promotion-service
+      strip-prefix: false
+    store:
+      path: /api/admin/store/**
+      service-id: promotion-service
+      strip-prefix: false
+    store-review:
+      path: /api/admin/store-review/**
+      service-id: promotion-service
+      strip-prefix: false
+    product:
+      path: /api/admin/product/**
+      service-id: promotion-service
+      strip-prefix: false
+    product-review:
+      path: /api/admin/product-review/**
+      service-id: promotion-service
+      strip-prefix: false
+    campaign:
+      path: /api/admin/campaign/**
+      service-id: promotion-service
+      strip-prefix: false
+    campaign-review:
+      path: /api/admin/campaign-review/**
+      service-id: promotion-service
+      strip-prefix: false
+    customer-list:
+      path: /api/admin/customer-list/**
+      service-id: promotion-service
+      strip-prefix: false
+    action-log:
+      path: /api/admin/action-log/**
+      service-id: action-log-service
+      strip-prefix: false
+    ecom-action-log:
+      path: /api/admin/ecom-action-log/**
+      service-id: action-log-service
+      strip-prefix: false
+    request-log:
+      path: /api/admin/request-log/**
+      service-id: action-log-service
+      strip-prefix: false
+    business-log:
+      path: /api/admin/business-log/**
+      service-id: action-log-service
+      strip-prefix: false
+    error-log:
+      path: /api/admin/error-log/**
+      service-id: action-log-service
+      strip-prefix: false
+    sync-request-log:
+      path: /api/admin/sync-request-log/**
+      service-id: action-log-service
+      strip-prefix: false
+    customer-segment:
+      path: /api/admin/customer-segment/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher:
+      path: /api/admin/voucher/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-review:
+      path: /api/admin/voucher-review/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-lookup:
+      path: /api/admin/voucher-lookup/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-code-set:
+      path: /api/admin/voucher-code-set/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-important:
+      path: /api/admin/voucher-important/**
+      service-id: promotion-service
+      strip-prefix: false
+    gift:
+      path: /api/admin/gift/**
+      service-id: promotion-service
+      strip-prefix: false
+    give-code-history:
+      path: /api/admin/give-code-history/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-code:
+      path: /api/admin/voucher-code/**
+      service-id: promotion-service
+      strip-prefix: false
+    sms-content-config:
+      path: /api/admin/sms-content-config/**
+      service-id: promotion-service
+      strip-prefix: false
+    email-receiver:
+      path: /api/admin/email-receiver/**
+      service-id: promotion-service
+      strip-prefix: false
+    sms-receiver:
+      path: /api/admin/sms-receiver/**
+      service-id: promotion-service
+      strip-prefix: false
+    proactive-sms:
+      path: /api/admin/proactive-sms/**
+      service-id: promotion-service
+      strip-prefix: false
+    system-config:
+      path: /api/admin/system-config/**
+      service-id: promotion-service
+      strip-prefix: false
+    customer-supported-by-admin:
+      path: /api/admin/customer-supported-by-admin/**
+      service-id: promotion-service
+      strip-prefix: false
+    code-expire-warning-config:
+      path: /api/admin/code-expire-warning-config/**
+      service-id: promotion-service
+      strip-prefix: false
+    retrieve-code:
+      path: /api/admin/code-retrieve/**
+      service-id: promotion-service
+      strip-prefix: false
+    campaign-lookup:
+      path: /api/admin/campaign-lookup/**
+      service-id: promotion-service
+      strip-prefix: false
+    product-lookup:
+      path: /api/admin/product-lookup/**
+      service-id: promotion-service
+      strip-prefix: false
+    error-content-config:
+      path: /api/admin/error-content-config/**
+      service-id: promotion-service
+      strip-prefix: false
+    get-voucher-blacklist:
+      path: /api/admin/get-voucher-blacklist/**
+      service-id: promotion-service
+      strip-prefix: false
+    view-get-voucher-blacklist:
+      path: /api/admin/view-get-voucher-blacklist/**
+      service-id: promotion-service
+      strip-prefix: false
+    get-code:
+      path: /api/admin/get-code/**
+      service-id: promotion-service
+      strip-prefix: false
+    partner-get-code:
+      path: /api/admin/partner-get-code/**
+      service-id: promotion-service
+      strip-prefix: false
+    partner-voucher-on-off:
+      path: /api/admin/partner-voucher-on-off/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-partner-buy-url:
+      path: /api/admin/voucher-partner-buy-url/**
+      service-id: promotion-service
+      strip-prefix: false
+    cross-check-voucher:
+      path: /api/admin/cross-check-voucher/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-transaction:
+      path: /api/**/voucher-transaction/**
+      service-id: promotion-service
+      strip-prefix: false
+    tracking-msisdn:
+      path: /api/admin/tracking-msisdn/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-threshold-point:
+      path: /api/admin/voucher-threshold-point/**
+      service-id: promotion-service
+      strip-prefix: false
+    voucher-threshold-price:
+      path: /api/admin/voucher-threshold-price/**
+      service-id: promotion-service
+      strip-prefix: false
+    view-and-get-code-voucher:
+      path: /api/admin/view-and-get-code-voucher/**
+      service-id: promotion-service
+      strip-prefix: false
+    otp:
+      path: /api/admin/otp/**
+      service-id: promotion-service
+      strip-prefix: false
+    district:
+      path: /api/admin/district/**
+      service-id: promotion-service
+      strip-prefix: false
+    vtpay-transaction:
+      path: /api/admin/vtpay-transaction/**
+      service-id: promotion-service
+      strip-prefix: false
+    ecom-sub-admin:
+      path: /api/admin/ecom-sub-admin/**
+      service-id: user-service
+      strip-prefix: false
+    ecom-product-category:
+      path: /api/admin/ecom-product-category/**
+      service-id: promotion-service
+      strip-prefix: false
+    ecom-provider:
+      path: /api/admin/ecom-provider/**
+      service-id: promotion-service
+      strip-prefix: false
+    ecom-product:
+      path: /api/admin/ecom-product/**
+      service-id: promotion-service
+      strip-prefix: false
+    ward:
+      path: /api/admin/ward/**
+      service-id: promotion-service
+      strip-prefix: false
+    partner-coverage:
+      path: /api/admin/partner-coverage/**
+      service-id: promotion-service
+      strip-prefix: false
+    coverage-by-district:
+      path: /api/admin/coverage-by-district/**
+      service-id: promotion-service
+      strip-prefix: false
+    blacklist-set:
+      path: /api/admin/blacklist-set/**
+      service-id: promotion-service
+      strip-prefix: false
+    merchant:
+      path: /api/admin/merchant/**
+      service-id: promotion-service
+      strip-prefix: false
+    get-blacklist-set:
+      path: /api/admin/get-blacklist-set/**
+      service-id: promotion-service
+      strip-prefix: false
+    limiter:
+      path: /api/admin/limiter/**
+      service-id: promotion-service
+      strip-prefix: false
+    booking:
+      path: /api/admin/booking/**
+      service-id: promotion-service
+      strip-prefix: false
+    membership-info:
+      path: /api/admin/membership-info/**
+      service-id: promotion-service
+      strip-prefix: false
+    member-card:
+      path: /api/admin/member-card/**
+      service-id: promotion-service
+      strip-prefix: false
+    partner-provider-mapping:
+      path: /api/admin/partner-provider-mapping/**
+      service-id: promotion-service
+      strip-prefix: false
+    cdr-history:
+      path: /api/admin/cdr-history/**
+      service-id: promotion-service
+      strip-prefix: false
+    cooperation-partner:
+      path: /api/admin/cooperation-partner/**
+      service-id: promotion-service
+      strip-prefix: false
+    provider-field-cross-check:
+      path: /api/admin/provider-field-cross-check/**
+      service-id: promotion-service
+      strip-prefix: false
+    career:
+      path: /api/admin/career/**
+      service-id: promotion-service
+      strip-prefix: false
+    provider:
+      path: /api/admin/provider/**
+      service-id: promotion-service
+      strip-prefix: false
+    accumulate-point-history:
+      path: /api/admin/accumulate-point-history/**
+      service-id: promotion-service
+      strip-prefix: false
+    up-file-used-code:
+      path: /api/admin/up-file-used-code/**
+      service-id: promotion-service
+      strip-prefix: false
+    async-task:
+      path: /api/admin/async-task/**
+      service-id: promotion-service
+      strip-prefix: false
+    export-cdr:
+      path: /api/admin/export-cdr/**
+      service-id: promotion-service
+      strip-prefix: false
+    export-voucher-json:
+      path: /api/admin/export-voucher-json/**
+      service-id: promotion-service
+      strip-prefix: false
+    cache-manage:
+      path: /api/admin/cache-manage/**
+      service-id: promotion-service
+      strip-prefix: false
+    banner-web:
+      path: /api/admin/banner-web/**
+      service-id: promotion-service
+      strip-prefix: false
+    accumulate-point-transaction:
+      path: /api/admin/accumulate-point-transaction/**
+      service-id: promotion-service
+      strip-prefix: false
+    app:
+      path: /api/admin/app/**
+      service-id: user-service
+      strip-prefix: false
+    check-accessibility:
+      path: /api/admin/check-accessibility/**
+      service-id: promotion-service
+      strip-prefix: false
+    cms:
+      path: /**
+      service-id: cms
+      strip-prefix: false
+
+jasypt:
+  encryptor:
+    password: ${CONFIG_ENCRYPTOR_SECRET:n4vekQdqiGeuk_VTT_QLDT_2020}

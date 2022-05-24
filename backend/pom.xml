@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- To change parent version, use following command -->
+	<!-- mvn versions:set -DnewVersion=1.01 -DgenerateBackupPoms=false -->
+	<groupId>com.mb.lab.banks</groupId>
+	<artifactId>backend</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.2.RELEASE</version>
+		<relativePath />
+	</parent>
+
+	<modules>
+		<module>api-gateway</module>
+		<module>cms-gateway</module>
+		<module>auth-server</module>
+		<module>discovery-service</module>
+		<module>user-service</module>
+		<module>utils</module>
+	</modules>
+
+	<properties>
+		<java.version>1.8</java.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<dist.dir>${project.basedir}/dist</dist.dir>
+
+		<!-- Override -->
+		<mysql.version>6.0.6</mysql.version>
+		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
+		<thymeleaf-extras-springsecurity5.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity5.version>
+		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
+
+		<app.spring-cloud.version>Hoxton.RELEASE</app.spring-cloud.version>
+
+		<app.spring-security-oauth.version>2.3.5.RELEASE</app.spring-security-oauth.version>
+		<app.spring-security-oauth-autoconfig.version>2.1.3.RELEASE</app.spring-security-oauth-autoconfig.version>
+		<app.spring-security-jwt.version>1.0.10.RELEASE</app.spring-security-jwt.version>
+
+		<app.recaptcha-spring-boot.version>2.2.0</app.recaptcha-spring-boot.version>
+
+		<app.winsw.version>2.2.0</app.winsw.version>
+		<app.aws-java-sdk-s3.version>1.11.390</app.aws-java-sdk-s3.version>
+		<app.commons-io.version>2.4</app.commons-io.version>
+		<app.commons-fileupload.version>1.3.1</app.commons-fileupload.version>
+		<app.commons-collections4.version>4.0</app.commons-collections4.version>
+		<app.commons-text.version>1.8</app.commons-text.version>
+		<app.guava.version>22.0</app.guava.version>
+		<app.poi.version>3.14</app.poi.version>
+		<app.imageio-jpeg.version>3.4.3</app.imageio-jpeg.version>
+
+		<app.node.version>v10.6.0</app.node.version>
+		<app.npm.version>6.1.0</app.npm.version>
+
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${app.spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth2</artifactId>
+				<version>${app.spring-security-oauth.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-jwt</artifactId>
+				<version>${app.spring-security-jwt.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.security.oauth.boot</groupId>
+				<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+				<version>${app.spring-security-oauth-autoconfig.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.ulisesbocchio</groupId>
+				<artifactId>jasypt-spring-boot-starter</artifactId>
+				<version>2.1.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mariadb.jdbc</groupId>
+				<artifactId>mariadb-java-client</artifactId>
+				<version>2.5.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.redisson</groupId>
+				<artifactId>redisson-spring-boot-starter</artifactId>
+				<version>3.12.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.redisson</groupId>
+				<artifactId>redisson-hibernate-53</artifactId>
+				<version>3.12.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.marshalling</groupId>
+				<artifactId>jboss-marshalling-river</artifactId>
+				<version>2.0.9.Final</version>
+			</dependency>
+
+			<!-- Packing -->
+			<dependency>
+				<groupId>com.sun.winsw</groupId>
+				<artifactId>winsw</artifactId>
+				<version>${app.winsw.version}</version>
+				<classifier>bin</classifier>
+				<type>exe</type>
+			</dependency>
+
+			<!-- Google reCAPTCHA -->
+			<dependency>
+				<groupId>com.github.mkopylec</groupId>
+				<artifactId>recaptcha-spring-boot-starter</artifactId>
+				<version>${app.recaptcha-spring-boot.version}</version>
+			</dependency>
+
+			<!-- Hazelcast -->
+			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast</artifactId>
+				<version>3.9.4</version>
+			</dependency>
+
+			<!-- Apache Commons FileUpload -->
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>${app.commons-fileupload.version}</version>
+			</dependency>
+
+			<!-- Amazon S3 SDK -->
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-s3</artifactId>
+				<version>${app.aws-java-sdk-s3.version}</version>
+			</dependency>
+
+			<!-- Goolge Guava -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${app.guava.version}</version>
+			</dependency>
+
+			<!-- Imgscalr -->
+			<dependency>
+				<groupId>org.imgscalr</groupId>
+				<artifactId>imgscalr-lib</artifactId>
+				<version>4.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.coobird</groupId>
+				<artifactId>thumbnailator</artifactId>
+				<version>0.4.8</version>
+			</dependency>
+
+			<!-- Commons utils -->
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>${app.commons-collections4.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${app.commons-io.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>${app.commons-text.version}</version>
+			</dependency>
+
+			<!-- Apache POI -->
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>${app.poi.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${app.poi.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.ocpsoft.prettytime</groupId>
+				<artifactId>prettytime</artifactId>
+				<version>4.0.2.Final</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.passay</groupId>
+				<artifactId>passay</artifactId>
+				<version>1.4.0</version>
+			</dependency>
+
+			<!-- Plug-in support upload image -->
+			<dependency>
+				<groupId>com.twelvemonkeys.imageio</groupId>
+				<artifactId>imageio-jpeg</artifactId>
+				<version>${app.imageio-jpeg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.twelvemonkeys.imageio</groupId>
+				<artifactId>imageio-tiff</artifactId>
+				<version>${app.imageio-jpeg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.twelvemonkeys.servlet</groupId>
+				<artifactId>servlet</artifactId>
+				<version>${app.imageio-jpeg.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.ben-manes.caffeine</groupId>
+				<artifactId>caffeine</artifactId>
+				<version>2.8.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-ratelimiter</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-reactor</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<repositories>
+
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/libs-milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>spring-plugins</id>
+			<name>Spring Plugins</name>
+			<url>http://repo.spring.io/plugins-release/</url>
+		</repository>
+
+		<repository>
+			<id>jenkins</id>
+			<name>Jenkins Repository</name>
+			<url>http://repo.jenkins-ci.org/releases</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>dcm4che</id>
+			<name>dcm4che Repository</name>
+			<url>http://www.dcm4che.org/maven2/</url>
+		</repository>
+
+		<repository>
+			<id>byu3party</id>
+			<name>BYU Repository Thirdparty</name>
+			<url>https://developer.byu.edu/maven2/content/groups/thirdparty/</url>
+		</repository>
+
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,51 @@
+server:
+  port: 8201
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    #ip-address: 
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetchRegistry: true
+
+common:
+  web-url: http://localhost:4200
+
+spring:
+  
+  redis:
+    database: 0
+    host: 192.168.100.203
+    password: ENC(5ngERB+kN2dxsHDBauA5anrzhGGg81sT1aVxbNy2zeFtql1f6EJia8X4vHarGX+ZJU+XC+87GJQ=)
+    
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 192.168.100.203:9092
+  
+security:
+  oauth2:
+    authorization:
+      jwt:
+        key-value: ENC(S1OY8tEwytr7QVrHcymlcA==)
+      client-details:
+        web-cms:
+          client-id: app
+          client-secret: 123456
+          grant-type: authorization_code,refresh_token
+          scope: read,write
+          refresh-token-validity: 1800
+          access-token-validity: 1200
+          redirect-uri: http://localhost:4200/login
+        mobile:
+          client-id: mobile
+          client-secret: 123456
+          grant-type: password,refresh_token
+          scope: read,write
+          refresh-token-validity: 604800
+          access-token-validity: 1800
+
+          
