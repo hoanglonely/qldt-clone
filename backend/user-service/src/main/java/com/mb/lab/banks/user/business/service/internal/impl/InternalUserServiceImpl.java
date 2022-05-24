@@ -31,10 +31,6 @@ import com.mb.lab.banks.user.persistence.repository.UserFeatureRepository;
 import com.mb.lab.banks.user.persistence.repository.UserRepository;
 import com.mb.lab.banks.user.util.common.PasswordUtils;
 import com.mb.lab.banks.utils.common.StringUtils;
-import com.mb.lab.banks.utils.event.UserPasswordChangedEvent;
-import com.mb.lab.banks.utils.event.stream.EventStreamsHelper;
-import com.mb.lab.banks.utils.event.stream.UserDeactivationStreams;
-import com.mb.lab.banks.utils.event.stream.UserPasswordChangedStreams;
 import com.mb.lab.banks.utils.exception.BusinessAssert;
 import com.mb.lab.banks.utils.exception.BusinessExceptionCode;
 
@@ -42,156 +38,146 @@ import com.mb.lab.banks.utils.exception.BusinessExceptionCode;
 @Service
 public class InternalUserServiceImpl extends A_Service implements InternalUserService {
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UserFeatureRepository userFeatureRepository;
+	@Autowired
+	private UserFeatureRepository userFeatureRepository;
 
-    @Autowired
-    private EventStreamsHelper eventStreamsHelper;
+	@Autowired
+	private PasswordStrenghtProperties passwordStrenghtProperties;
 
-    @Autowired
-    private UserDeactivationStreams.OutBound userDeactivationStreamsOutBound;
+	@Override
+	public UserLoginDto getByUsername(String username) {
+		BusinessAssert.isTrue(!StringUtils.isEmpty(username));
 
-    @Autowired
-    private UserPasswordChangedStreams.OutBound userPasswordChangedStreamsOutBound;
+		Optional<User> optional = userRepository.findByUsername(username.toLowerCase());
 
-    @Autowired
-    private PasswordStrenghtProperties passwordStrenghtProperties;
+		if (optional.isPresent()) {
+			return new UserLoginDto(optional.get());
+		}
 
-    @Override
-    public UserLoginDto getByUsername(String username) {
-        BusinessAssert.isTrue(!StringUtils.isEmpty(username));
+		return null;
+	}
 
-        Optional<User> optional = userRepository.findByUsername(username.toLowerCase());
+	@Override
+	public UserInfoDto getUserInfo(Long userId) {
+		Optional<User> optional = userRepository.findById(userId);
+		if (optional.isPresent()) {
+			User user = optional.get();
 
-        if (optional.isPresent()) {
-            return new UserLoginDto(optional.get());
-        }
+			if (user != null) {
+				if (user.getRole().equals(UserRole.ADMIN) || user.getRole().equals(UserRole.ECOM_ADMIN)) {
+					return new UserInfoDto(user);
+				}
 
-        return null;
-    }
+				List<UserFeature> userFeatures = userFeatureRepository.findByUserId(user.getId());
+				Set<Feature> features = new HashSet<>(userFeatures.size());
+				for (UserFeature userFeature : userFeatures) {
+					features.add(userFeature.getFeature());
+				}
 
-    @Override
-    public UserInfoDto getUserInfo(Long userId) {
-        Optional<User> optional = userRepository.findById(userId);
-        if (optional.isPresent()) {
-            User user = optional.get();
+				return new UserInfoDto(user, features);
+			}
+		}
 
-            if (user != null) {
-                if (user.getRole().equals(UserRole.ADMIN) || user.getRole().equals(UserRole.ECOM_ADMIN)) {
-                    return new UserInfoDto(user);
-                }
+		return null;
+	}
 
-                List<UserFeature> userFeatures = userFeatureRepository.findByUserId(user.getId());
-                Set<Feature> features = new HashSet<>(userFeatures.size());
-                for (UserFeature userFeature : userFeatures) {
-                    features.add(userFeature.getFeature());
-                }
+	@Override
+	public void changePassword(Long userId, ChangePasswordDto dto) {
+		BusinessAssert.notNull(dto);
+		BusinessAssert.notNull(dto.getOldPassword());
+		BusinessAssert.notNull(dto.getNewPassword());
+		BusinessAssert.isTrue(!dto.getOldPassword().toLowerCase().equals(dto.getNewPassword().toLowerCase()),
+				BusinessExceptionCode.PASSWORD_NOT_SAME, "password not same");
+		List<String> weakPasswordPatterns = passwordStrenghtProperties.getWeakPassword();
+		if (!StringUtils.isEmpty(weakPasswordPatterns)) {
+			BusinessAssert.isTrue(!PasswordUtils.isWeakPassword(dto.getNewPassword(), weakPasswordPatterns),
+					BusinessExceptionCode.WEAK_PASSWORD, "weak password");
+		}
 
-                return new UserInfoDto(user, features);
-            }
-        }
+		BusinessAssert.isTrue(PasswordUtils.isValidPassword(dto.getNewPassword()),
+				BusinessExceptionCode.INVALID_NEW_PASSWORD, "Password not strong enough");
 
-        return null;
-    }
+		Optional<User> optional = userRepository.findById(userId);
 
-    @Override
-    public void changePassword(Long userId, ChangePasswordDto dto) {
-        BusinessAssert.notNull(dto);
-        BusinessAssert.notNull(dto.getOldPassword());
-        BusinessAssert.notNull(dto.getNewPassword());
-        BusinessAssert.isTrue(!dto.getOldPassword().toLowerCase().equals(dto.getNewPassword().toLowerCase()), BusinessExceptionCode.PASSWORD_NOT_SAME,
-                "password not same");
-        List<String> weakPasswordPatterns = passwordStrenghtProperties.getWeakPassword();
-        if (!StringUtils.isEmpty(weakPasswordPatterns)) {
-            BusinessAssert.isTrue(!PasswordUtils.isWeakPassword(dto.getNewPassword(), weakPasswordPatterns), BusinessExceptionCode.WEAK_PASSWORD,
-                    "weak password");
-        }
+		BusinessAssert.isTrue(optional.isPresent(), "No user found");
 
-        BusinessAssert.isTrue(PasswordUtils.isValidPassword(dto.getNewPassword()), BusinessExceptionCode.INVALID_NEW_PASSWORD, "Password not strong enough");
+		User user = optional.get();
 
-        Optional<User> optional = userRepository.findById(userId);
+		BusinessAssert.isTrue(passwordEncoder.matches(dto.getOldPassword(), user.getPassword()),
+				BusinessExceptionCode.INVALID_OLD_PASSWORD, "Old password not match");
 
-        BusinessAssert.isTrue(optional.isPresent(), "No user found");
+		user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
 
-        User user = optional.get();
+		userRepository.save(user);
+	}
 
-        BusinessAssert.isTrue(passwordEncoder.matches(dto.getOldPassword(), user.getPassword()), BusinessExceptionCode.INVALID_OLD_PASSWORD,
-                "Old password not match");
+	@Override
+	public UserSimpleDto getById(Long id) {
+		User user = getPOMandatory(userRepository, id);
+		return new UserSimpleDto(user);
+	}
 
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+	@Override
+	public List<UserSimpleDto> getList(UserSearchParamDto searchParam) {
+		Assert.notNull(searchParam, "Search param must not be null");
+		ActiveStatus activeStatus = searchParam.getActiveStatus();
 
-        userRepository.save(user);
+		List<User> domains = userRepository.findByRole(null, activeStatus, null, null, null, null,
+				searchParam.getIdList(), searchParam.getUsernameList(), null);
+		if (CollectionUtils.isEmpty(domains)) {
+			return Collections.emptyList();
+		}
 
-        eventStreamsHelper.sendEvent(userPasswordChangedStreamsOutBound.channel(), new UserPasswordChangedEvent(userId));
-    }
+		List<UserSimpleDto> dtos = new ArrayList<>(domains.size());
+		for (User domain : domains) {
+			dtos.add(new UserSimpleDto(domain));
+		}
 
-    @Override
-    public UserSimpleDto getById(Long id) {
-        User user = getPOMandatory(userRepository, id);
-        return new UserSimpleDto(user);
-    }
+		return dtos;
+	}
 
-    @Override
-    public List<UserSimpleDto> getList(UserSearchParamDto searchParam) {
-        Assert.notNull(searchParam, "Search param must not be null");
-        ActiveStatus activeStatus = searchParam.getActiveStatus();
+	@Override
+	public void deactivateAdminPartner(Long partnerId) {
+		List<User> domains = userRepository.findByRole(UserRole.PARTNER_ADMIN, ActiveStatus.ACTIVE, null, null, null,
+				partnerId, null, null, null);
+		if (CollectionUtils.isEmpty(domains)) {
+			return;
+		}
+		Set<Long> idList = new HashSet<>();
+		for (User domain : domains) {
+			idList.add(domain.getId());
+		}
+		userRepository.deactivate(idList);
+	}
 
-        List<User> domains = userRepository.findByRole(null, activeStatus, null, null, null, null, searchParam.getIdList(), searchParam.getUsernameList(),
-                null);
-        if (CollectionUtils.isEmpty(domains)) {
-            return Collections.emptyList();
-        }
+	@Override
+	public void deactivateAdminStore(Long storeId) {
+		List<User> domains = userRepository.findByRole(UserRole.STORE_ADMIN, ActiveStatus.ACTIVE, null, null, storeId,
+				null, null, null, null);
+		if (CollectionUtils.isEmpty(domains)) {
+			return;
+		}
+		Set<Long> idList = new HashSet<>();
+		for (User domain : domains) {
+			idList.add(domain.getId());
+		}
+		userRepository.deactivate(idList);
+	}
 
-        List<UserSimpleDto> dtos = new ArrayList<>(domains.size());
-        for (User domain : domains) {
-            dtos.add(new UserSimpleDto(domain));
-        }
-
-        return dtos;
-    }
-
-    @Override
-    public void deactivateAdminPartner(Long partnerId) {
-        List<User> domains = userRepository.findByRole(UserRole.PARTNER_ADMIN, ActiveStatus.ACTIVE, null, null, null, partnerId, null, null, null);
-        if (CollectionUtils.isEmpty(domains)) {
-            return;
-        }
-        Set<Long> idList = new HashSet<>();
-        for (User domain : domains) {
-            idList.add(domain.getId());
-            eventStreamsHelper.sendEvent(userDeactivationStreamsOutBound.channel(), new UserPasswordChangedEvent(domain.getId()));
-        }
-        userRepository.deactivate(idList);
-    }
-
-    @Override
-    public void deactivateAdminStore(Long storeId) {
-        List<User> domains = userRepository.findByRole(UserRole.STORE_ADMIN, ActiveStatus.ACTIVE, null, null, storeId, null, null, null, null);
-        if (CollectionUtils.isEmpty(domains)) {
-            return;
-        }
-        Set<Long> idList = new HashSet<>();
-        for (User domain : domains) {
-            idList.add(domain.getId());
-            eventStreamsHelper.sendEvent(userDeactivationStreamsOutBound.channel(), new UserPasswordChangedEvent(domain.getId()));
-        }
-        userRepository.deactivate(idList);
-    }
-
-    @Override
-    public Set<String> getFeatures(Long id) {
-        List<UserFeature> userFeatures = userFeatureRepository.findByUserId(id);
-        Set<String> features = new HashSet<>(userFeatures.size());
-        for (UserFeature userFeature : userFeatures) {
-            features.add(userFeature.getFeature().name());
-        }
-        return features;
-    }
+	@Override
+	public Set<String> getFeatures(Long id) {
+		List<UserFeature> userFeatures = userFeatureRepository.findByUserId(id);
+		Set<String> features = new HashSet<>(userFeatures.size());
+		for (UserFeature userFeature : userFeatures) {
+			features.add(userFeature.getFeature().name());
+		}
+		return features;
+	}
 
 }

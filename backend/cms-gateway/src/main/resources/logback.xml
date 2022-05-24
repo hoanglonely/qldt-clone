@@ -6,7 +6,7 @@
 		<resetJUL>true</resetJUL>
 	</contextListener>
 	
-	<turboFilter class="com.mb.lab.banks.cmsgateway.utils.ZuulSafeExceptionLogFilter"/>
+	<turboFilter class="com.mb.lab.banks.apigateway.utils.ZuulSafeExceptionLogFilter"/>
 
 	<!-- To enable JMX Management -->
 	<jmxConfigurator />
@@ -14,7 +14,7 @@
 	<conversionRule conversionWord="pLowercase" converterClass="com.mb.lab.banks.utils.logging.LowercaseLevelConverter" />
 
 	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
-	<property name="LOG_FILE" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}cms-gateway.log" />
+	<property name="LOG_FILE" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}api-gateway.log" />
 	<property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 	
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -28,7 +28,7 @@
 		<file>${LOG_FILE}</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<cleanHistoryOnStart>${LOG_FILE_CLEAN_HISTORY_ON_START:-false}</cleanHistoryOnStart>
-			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}%d{yyyyMMdd}_%i{}_cms-gateway.zip}</fileNamePattern>
+			<fileNamePattern>${ROLLING_FILE_NAME_PATTERN:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}%d{yyyyMMdd}_%i{}_api-gateway.zip}</fileNamePattern>
 			<maxFileSize>${LOG_FILE_MAX_SIZE:-10MB}</maxFileSize>
 			<maxHistory>${LOG_FILE_MAX_HISTORY:-30}</maxHistory>
 			<totalSizeCap>${LOG_FILE_TOTAL_SIZE_CAP:-0}</totalSizeCap>

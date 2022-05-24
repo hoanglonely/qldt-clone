@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,33 +19,23 @@ import com.mb.lab.banks.user.business.aop.RequireFeature;
 import com.mb.lab.banks.user.business.dto.base.DTO;
 import com.mb.lab.banks.user.business.dto.base.ListDto;
 import com.mb.lab.banks.user.business.dto.base.ListDto.ListCountQuery;
-import com.mb.lab.banks.user.business.dto.sms.SmsContentConfigDto;
 import com.mb.lab.banks.user.business.dto.subadmin.UserDto;
 import com.mb.lab.banks.user.business.dto.subadmin.UserWriteDto;
 import com.mb.lab.banks.user.business.dto.user.UserSearchParamDto;
 import com.mb.lab.banks.user.business.dto.user.UserSimpleDto;
 import com.mb.lab.banks.user.business.service.base.impl.PODraftableServiceImpl;
 import com.mb.lab.banks.user.business.service.manager.SubAdminManagementService;
-import com.mb.lab.banks.user.business.service.sms.InternalSmsService;
 import com.mb.lab.banks.user.business.service.sub.UserFeatureCacheSubService;
 import com.mb.lab.banks.user.persistence.domain.User;
 import com.mb.lab.banks.user.persistence.domain.UserFeature;
 import com.mb.lab.banks.user.persistence.domain.entity.ActiveStatus;
 import com.mb.lab.banks.user.persistence.domain.entity.Feature;
-import com.mb.lab.banks.user.persistence.domain.entity.SmsType;
 import com.mb.lab.banks.user.persistence.domain.entity.UserRole;
 import com.mb.lab.banks.user.persistence.repository.PODraftableRepository;
 import com.mb.lab.banks.user.persistence.repository.UserRepository;
 import com.mb.lab.banks.user.util.common.PasswordUtils;
 import com.mb.lab.banks.user.util.security.UserLogin;
 import com.mb.lab.banks.utils.common.MobileNumberUtils;
-import com.mb.lab.banks.utils.event.SendSmsEvent;
-import com.mb.lab.banks.utils.event.UserDeactivationEvent;
-import com.mb.lab.banks.utils.event.UserPasswordChangedEvent;
-import com.mb.lab.banks.utils.event.stream.EventStreamsHelper;
-import com.mb.lab.banks.utils.event.stream.SendSmsStreams;
-import com.mb.lab.banks.utils.event.stream.UserDeactivationStreams;
-import com.mb.lab.banks.utils.event.stream.UserPasswordChangedStreams;
 import com.mb.lab.banks.utils.exception.BusinessAssert;
 import com.mb.lab.banks.utils.exception.BusinessExceptionCode;
 
@@ -61,21 +50,6 @@ public class SubAdminManagementServiceImpl extends PODraftableServiceImpl<User, 
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private EventStreamsHelper eventStreamsHelper;
-
-	@Autowired
-	private UserDeactivationStreams.OutBound userDeactivationStreamsOutBound;
-
-	@Autowired
-	private UserPasswordChangedStreams.OutBound userPasswordChangedStreamsOutBound;
-
-	@Autowired
-	private SendSmsStreams.OutBound sendSmsStreamsOutBound;
-
-	@Autowired
-	private InternalSmsService internalSmsService;
 
 	@Autowired
 	private UserFeatureCacheSubService userFeatureCacheSubService;
@@ -183,19 +157,6 @@ public class SubAdminManagementServiceImpl extends PODraftableServiceImpl<User, 
 
 		domain = getRepository().save(domain);
 
-		// Send SMS
-		SmsContentConfigDto template = internalSmsService.getContentConfig(SmsType.CREATE_SUB_ADMIN);
-
-		if (template == null) {
-			logger.info("No sms content config ACTIVE for type " + SmsType.CREATE_SUB_ADMIN);
-		} else {
-			String smsContent = createSmsContent(template.getContent(), domain, newPassword);
-
-			SendSmsEvent event = SendSmsEvent.create(msisdnStandardized, smsContent);
-
-			eventStreamsHelper.sendEvent(sendSmsStreamsOutBound.channel(), event);
-		}
-
 		return new DTO(domain);
 	}
 
@@ -272,31 +233,6 @@ public class SubAdminManagementServiceImpl extends PODraftableServiceImpl<User, 
 		user.setPassword(passwordEncoder.encode(newPassword));
 
 		userRepository.save(user);
-
-		// Send SMS
-		SmsContentConfigDto template = internalSmsService.getContentConfig(SmsType.RESET_PASSWORD_SUB_ADMIN);
-
-		if (template == null) {
-			logger.info("No sms content config ACTIVE for type " + SmsType.RESET_PASSWORD_SUB_ADMIN);
-		} else {
-			String smsContent = createSmsContent(template.getContent(), user, newPassword);
-
-			SendSmsEvent event = SendSmsEvent.create(user.getPhone(), smsContent);
-
-			eventStreamsHelper.sendEvent(sendSmsStreamsOutBound.channel(), event);
-		}
-
-		eventStreamsHelper.sendEvent(userPasswordChangedStreamsOutBound.channel(),
-				new UserPasswordChangedEvent(user.getId()));
-	}
-
-	// PROTECTED
-	@Override
-	protected void afterDeactivate(UserLogin userLogin, User domain) {
-		super.afterDeactivate(userLogin, domain);
-
-		eventStreamsHelper.sendEvent(userDeactivationStreamsOutBound.channel(),
-				new UserDeactivationEvent(domain.getId()));
 	}
 
 	// PRIVATE
@@ -311,15 +247,6 @@ public class SubAdminManagementServiceImpl extends PODraftableServiceImpl<User, 
 		BusinessAssert.isTrue(!isUsed, BusinessExceptionCode.USERNAME_USED, "username used");
 
 		return username;
-	}
-
-	private String createSmsContent(String template, User user, String password) {
-		Map<String, String> data = new HashMap<String, String>();
-		data.put("fullname", user.getFullname());
-		data.put("username", user.getUsername());
-		data.put("password", password);
-
-		return StringSubstitutor.replace(template, data);
 	}
 
 }

@@ -56,7 +56,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
             throw new LockedException("User was locked.");
         }
 
-        UserLogin userLogin = new UserLogin(user.getRole(), user.getId(), user.getUsername(), user.getPartnerId(), user.getStoreId());
+        UserLogin userLogin = new UserLogin(user.getRole(), user.getId(), user.getUsername());
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
         // Always have role USER

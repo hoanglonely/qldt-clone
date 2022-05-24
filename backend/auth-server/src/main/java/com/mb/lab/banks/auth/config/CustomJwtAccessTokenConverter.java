@@ -21,8 +21,6 @@ public class CustomJwtAccessTokenConverter extends JwtAccessTokenConverter {
         if (userAuthentication != null) {
             UserLogin userLogin = userAuthentication.getUserLogin();
             additionalInfo.put("username", userLogin.getUsername());
-            additionalInfo.put("partnerId", userLogin.getPartnerId());
-            additionalInfo.put("storeId", userLogin.getStoreId());
         }
 
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
@@ -30,8 +28,6 @@ public class CustomJwtAccessTokenConverter extends JwtAccessTokenConverter {
         
         Map<String, Object> updatedAdditionalInfo = cloneMap(((DefaultOAuth2AccessToken) accessToken).getAdditionalInformation());
         updatedAdditionalInfo.remove("username");
-        updatedAdditionalInfo.remove("partnerId");
-        updatedAdditionalInfo.remove("storeId");
         
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(updatedAdditionalInfo);
         return accessToken;

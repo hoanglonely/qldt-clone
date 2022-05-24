@@ -20,65 +20,62 @@ import com.mb.lab.banks.apigateway.filter.StoreAuthenticationToAttributeFilter;
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig implements ResourceServerConfigurer, Ordered {
-    
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
-    
-    private int order = 4;
 
-    @Override
-    public int getOrder() {
-        return order;
-    }
+	@Autowired
+	private RedisConnectionFactory redisConnectionFactory;
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
+	private int order = 4;
 
-    @Override
-    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-    }
-    
-    @Override
-    public void configure(final HttpSecurity http) throws Exception {
-        // @formatter:off
+	@Override
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	@Override
+	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+	}
+
+	@Override
+	public void configure(final HttpSecurity http) throws Exception {
+		// @formatter:off
 
 		http
             .requestMatchers()
-                .antMatchers("/api/**", "/auth/**", "/mobile-api/**", "/open-api/**")
+                .antMatchers("/api/**", "/auth/**")
                 .and()  
 			.authorizeRequests()
     			.antMatchers("/api/internal/**", "/auth/api/internal/**")
                     .denyAll()
-                .antMatchers("/auth/**", "/mobile-api/auth/**")
+                .antMatchers("/auth/**")
                     .permitAll()
-                .antMatchers("/open-api/**")
-                    .access("#oauth2.hasScope('open-api')")
 				.antMatchers("/**")
-				
 				    .access("hasRole('ROLE_USER')")
 				.and()
 		    .addFilterAfter(new StoreAuthenticationToAttributeFilter(), AbstractPreAuthenticatedProcessingFilter.class)
 		    ;
 		 
 		// @formatter:on
-    }
-    
-    @Bean
-    public TokenStore tokenStore(JwtAccessTokenConverter jwtAccessTokenConverter) {
-        return new RevocableJwtTokenStore(jwtAccessTokenConverter, redisConnectionFactory);
-    }
-    
-    @Configuration
-    public static class CustomJwtAccessTokenConverterConfigurer implements JwtAccessTokenConverterConfigurer {
-        
-        @Override
-        public void configure(JwtAccessTokenConverter converter) {
-            final DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
-            accessTokenConverter.setUserTokenConverter(new UserAuthenticationConverter());
-            
-            converter.setAccessTokenConverter(accessTokenConverter);
-        }
-        
-    }
+	}
+
+	@Bean
+	public TokenStore tokenStore(JwtAccessTokenConverter jwtAccessTokenConverter) {
+		return new RevocableJwtTokenStore(jwtAccessTokenConverter, redisConnectionFactory);
+	}
+
+	@Configuration
+	public static class CustomJwtAccessTokenConverterConfigurer implements JwtAccessTokenConverterConfigurer {
+
+		@Override
+		public void configure(JwtAccessTokenConverter converter) {
+			final DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
+			accessTokenConverter.setUserTokenConverter(new UserAuthenticationConverter());
+
+			converter.setAccessTokenConverter(accessTokenConverter);
+		}
+
+	}
 }

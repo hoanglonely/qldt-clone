@@ -15,7 +15,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
         // @formatter:off
         http
             .requestMatchers()
-                .antMatchers("/oauth/userinfo", "/oauth/password", "/oauth/token/revoke", "/mobile-api/**")
+                .antMatchers("/oauth/userinfo", "/oauth/password", "/oauth/token/revoke")
                 .and()
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

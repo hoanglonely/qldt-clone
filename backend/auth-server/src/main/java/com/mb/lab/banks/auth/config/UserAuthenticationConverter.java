@@ -31,10 +31,8 @@ public class UserAuthenticationConverter extends DefaultUserAuthenticationConver
                     .findFirst();
             
             String username = (String) map.get("username");
-            Long partnerId = getLongValue(map.get("partnerId"));
-            Long storeId = getLongValue(map.get("storeId"));
             
-            UserLogin userLogin = new UserLogin(role.get(), userId, username, partnerId, storeId);
+            UserLogin userLogin = new UserLogin(role.get(), userId, username);
             
             UserAuthenticationToken auth = new UserAuthenticationToken(principal, "N/A", authorities);
             auth.setUserLogin(userLogin);

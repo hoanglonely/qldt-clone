@@ -17,25 +17,6 @@ spring:
     redis:
       namespace: "{spring:auth:sessions}"
   
-  cloud:
-    stream:
-      default:
-        contentType: application/json
-        group: ${spring.application.name}
-        consumer:
-          headerMode: none
-        producer:
-          headerMode: none
-          partitionCount: 6
-      kafka:
-        binder:
-          autoAddPartitions: true
-      bindings:
-        user-deactivation-in:
-          destination: user-deactivation
-        user-password-changed-in:
-          destination: user-password-changed
-  
   mvc:
     throw-exception-if-no-handler-found: true
   
@@ -55,13 +36,6 @@ ribbon:
   ReadTimeout: 10000
   MaxAutoRetries: 0
   MaxAutoRetriesNextServer: 0
-    
-captcha:
-  enabled: true
-  security:
-    login-failures-threshold: 3
-  validation:
-    response-parameter: captcha
 
 jasypt:
   encryptor:
